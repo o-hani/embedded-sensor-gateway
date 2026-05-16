@@ -1,0 +1,11 @@
+# Exécutables
+capteur
+
+# Fichiers de build CMake
+build/
+*.o
+*.a
+
+# Fichiers temporaires
+*.tmp
+*~
