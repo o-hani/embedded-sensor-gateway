@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
-#include <memory> 
+#include <memory>
+#include <optional>
 
 // Création calsse Capteur
 class Capteur {
@@ -16,7 +17,7 @@ class Capteur {
             std::cout << "Capteur " << m_nom << " détruit\n";
         }
 
-        virtual void lireValeur() = 0;
+        virtual std::optional<double> lireValeur() = 0;
 
         double getValeur() const {
             return m_valeur;
@@ -35,9 +36,15 @@ class Capteur {
 class CapteurTemperature : public Capteur {
     public:
         CapteurTemperature(const std::string& nom): Capteur(nom) {}
-        
-        void lireValeur() override {
+
+        std::optional<double> lireValeur() override {
             m_valeur = 36.6;
+            if(m_valeur >= -40.0 && m_valeur <= 85.0) {
+                return m_valeur;
+            }
+            else {
+                return std::nullopt;
+            }
         }
 
         double enFahrenheit() const {
@@ -47,8 +54,15 @@ class CapteurTemperature : public Capteur {
 
 int main() {
     std::unique_ptr<Capteur> c = std::make_unique<CapteurTemperature>("température");
-    c->lireValeur();
-    std::cout << c->getValeur() << "\n";
-    //std::cout << c->enFahrenheit() << "\n";
+
+    auto temperature = c->lireValeur();
+
+    // Utilisation des méthodes de la classe std::optional: has_value() & .value()
+    if(temperature.has_value()) {
+        std::cout << "La valeur de la température est: " << temperature.value() << " °C\n";
+    }
+    else {
+        std::cout << "La lecture échoue\n";
+    }
     return 0;
 }
